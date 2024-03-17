@@ -56,3 +56,4 @@ function handleMenuItemClick(event) {
         spanText.classList.add('selected-menu-text');
     }
 }
+

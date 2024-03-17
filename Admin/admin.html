@@ -6,6 +6,7 @@
     <title>BusYan Admin</title>
     <link rel="stylesheet" href="./styles/admin.css" />
     <link rel="stylesheet" href="./styles/searchbar.css" />
+    <link rel="stylesheet" href="./styles/manage-user.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
@@ -74,18 +75,33 @@
         <div class="manage-user content" style="display: none">
           <h1 class="header">Manage Users</h1>
           <div class="container">
-            <div class="card" style="display: flex; justify-content: center;">
+                <div class="card" style="display: flex; flex-direction: column;">
 
-                <div class="wrap">
-                    <div class="search">
-                        <button type="submit" class="searchButton">
-                            <i class="fa fa-search"></i>
-                        </button>
-                        <input type="text" class="searchTerm" placeholder="Search"/>
-
+                    <div class="wrap">
+                        <div class="search">
+                            <button type="submit" class="searchButton">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            <input type="text" class="searchTerm" placeholder="Search"/>
+                        </div>
                     </div>
+
+                    <span>Bus Cooperative</span>
+
+                    <button class="button"><i class="fa-solid fa-plus"></i>Add Bus Coop</button>
+                    <div class="bus-coop-container">
+                        <div class="bus-coop-card">
+                            <img src="./images/pitam-logo.png" alt="bus coop img">
+                            <div><strong>PITAM Coop</strong></div>
+                        </div>
+                        <div class="bus-coop-card">
+                            <img src="./images/pitam-logo.png" alt="bus coop img">
+                            <div><strong>PITAM Coop</strong></div>
+                        </div>
+                    </div>
+
                 </div>
-          </div>
+            </div>
         </div>
 
         <div class="notification content" style="display: none">
