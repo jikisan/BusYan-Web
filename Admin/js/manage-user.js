@@ -3,6 +3,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getDatabase, get, ref, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { DBPaths } from '/Admin/js/DB.js';
+import { convertToPascal } from '/Admin/utils/Utils.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyClxrx1JHZKzdnoQpeGU0xdhSe4Szn9LX0",
@@ -17,56 +19,47 @@ const firebaseConfig = {
 
 // Initialize Firebase
 // firebase.initializeApp(firebaseConfig);
-
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 const auth = getAuth(app);
-const db = getDatabase();
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/auth.user
-        const uid = user.uid;
-        console.log(uid);
-
-        get(child(dbRef, `/Passengers/${uid}`)).then((snapshot) => {
-            if (snapshot.exists()) {
-
-                const data = snapshot.val();
-
-                console.log(data);
-                const fullName = data.fullName;
-                const imageUrl = data.imageUrl;
-
-                fillUserData(imageUrl, fullName, '');
-            } else {
-                console.log("No data available");
-            }
-        }).catch((error) => {
-            console.error(error);
-        });
-        // ...
-    } else {
-        // User is signed out
-        // ...
-    }
-});
 // Retrieve data from Firebase Realtime Database
 const dbRef = ref(getDatabase());
 
+let data; // Declare a global variable to store the data
 
+// onAuthStateChanged(auth, (user) => {
+//     if (user) {
+//         // User is signed in, see docs for a list of available properties
+//         const uid = user.uid;
 
-//  databaseRef.once("value")
-//    .then((snapshot) => {
-//      // Data is retrieved successfully
-//      const data = snapshot.val();
-//      console.log(data);
-//    })
-//    .catch((error) => {
-//      // Error handling
-//      console.error("Error retrieving data:", error);
+//         get(child(dbRef, `/Passengers/${uid}`))
+//         .then((snapshot) => {
+//             if (snapshot.exists()) {
+
+//                 data = snapshot.val();
+
+//                 const fullName = data.fullName;
+//                 const imageUrl = data.imageUrl;
+
+//                 fillUserData(imageUrl, fullName, '');
+//             } else {
+//                 alert("No data available");
+//             }
+//         }).catch((error) => {
+//             console.error(error);
+//         });
+//         // ...
+//     } 
+//     else {
+//         window.location.href = '/login.html'; // Replace "dashboard.html" with the URL of the page you want to redirect to
+//     }
 // });
+
+document.getElementById('addBusCoopBtn').addEventListener('click', showAddBusCoopModel);
+
+function showAddBusCoopModel() {
+    alert('modal');
+}
 
 function fillUserData(imageSrc, username, role) {
     
@@ -78,7 +71,8 @@ function fillUserData(imageSrc, username, role) {
 
     // Set the values
     imgElement.src = imageSrc;
-    usernameLabel.textContent = username;
+    usernameLabel.textContent = convertToPascal(username);
     roleLabel.textContent = 'Admin';
 }
+
 

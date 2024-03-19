@@ -147,7 +147,7 @@ li {
 }
 
 .wrapper .content .card {
-  height: 800px;
+  min-height: 200px;
   width: 100%;
   border-radius: 30px;
   background-color: white;

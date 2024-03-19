@@ -24,6 +24,7 @@
   border-radius: 25px;
   transition: all 0.3s ease;
   background: #9488a6;
+  cursor: pointer;
 }
 
 .bus-coop-container {
@@ -40,6 +41,7 @@
   flex-direction: column;
   justify-content: space-evenly;
   border: 1px solid black;
+  border-radius: 10px;
   margin: 15px;
 }
 
