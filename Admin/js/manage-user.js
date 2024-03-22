@@ -5,17 +5,8 @@ import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { DBPaths } from '/Admin/js/DB.js';
 import { convertToPascal } from '/Admin/utils/Utils.js';
+import firebaseConfig from '/CONFIG.js';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyClxrx1JHZKzdnoQpeGU0xdhSe4Szn9LX0",
-    authDomain: "busyan-capstone-3430e.firebaseapp.com",
-    databaseURL: "https://busyan-capstone-3430e-default-rtdb.firebaseio.com",
-    projectId: "busyan-capstone-3430e",
-    storageBucket: "busyan-capstone-3430e.appspot.com",
-    messagingSenderId: "513683055597",
-    appId: "1:513683055597:web:40dc2ff730a1c6b5b07de4",
-    measurementId: "G-NZXE0XTWWH"
-};
 
 // Initialize Firebase
 // firebase.initializeApp(firebaseConfig);
@@ -56,9 +47,25 @@ let data; // Declare a global variable to store the data
 // });
 
 document.getElementById('addBusCoopBtn').addEventListener('click', showAddBusCoopModel);
+document.getElementsByClassName('close')[0].addEventListener('click', hideAddBusCoopModel);
+document.getElementById('addBusCoopForm').addEventListener('submit', addBusCoop);
 
+
+ // Get the modal
+ const modal = document.getElementById("myModal");
+
+ function addBusCoop() {
+    
+ }
+
+ // When the user clicks the button, open the modal 
 function showAddBusCoopModel() {
-    alert('modal');
+    modal.style.display = "block";
+}
+
+ // When the user clicks on <span> (x), close the modal
+ function hideAddBusCoopModel() {
+    modal.style.display = "none";
 }
 
 function fillUserData(imageSrc, username, role) {
@@ -75,4 +82,22 @@ function fillUserData(imageSrc, username, role) {
     roleLabel.textContent = 'Admin';
 }
 
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+window.addEventListener('load', function () {
+    document.querySelector('input[type="file"]').addEventListener('change', function () {
+      if (this.files&&this.files[0]) {
+        const img = document.getElementById('busCoopImgBtn');
+        img.onload = () => {
+          URL.revokeObjectURL(img.src);
+        }
+        img.src = URL.createObjectURL(this.files[0]);
+      }
+    });
+  });
 

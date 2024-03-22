@@ -5,17 +5,8 @@ import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { DBPaths } from '/Admin/js/DB.js';
 import { convertToPascal } from '/Admin/utils/Utils.js';
+import firebaseConfig from '/CONFIG.js';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyClxrx1JHZKzdnoQpeGU0xdhSe4Szn9LX0",
-    authDomain: "busyan-capstone-3430e.firebaseapp.com",
-    databaseURL: "https://busyan-capstone-3430e-default-rtdb.firebaseio.com",
-    projectId: "busyan-capstone-3430e",
-    storageBucket: "busyan-capstone-3430e.appspot.com",
-    messagingSenderId: "513683055597",
-    appId: "1:513683055597:web:40dc2ff730a1c6b5b07de4",
-    measurementId: "G-NZXE0XTWWH"
-};
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -53,13 +44,11 @@ onAuthStateChanged(auth, (user) => {
         // User is signed in, see docs for a list of available properties
         const uid = user.uid;
 
-        console.log(DBPaths.PASSENGER);
         get(child(dbRef, `/${DBPaths.PASSENGER}/${uid}`))
         .then((snapshot) => {
             if (snapshot.exists()) {
 
                 data = snapshot.val();
-                console.log(data);
 
                 const fullName = data.fullName;
                 const email = data.email;
