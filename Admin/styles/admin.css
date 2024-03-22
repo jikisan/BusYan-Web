@@ -156,3 +156,7 @@ li {
   padding: 40px 20px;
   overflow: hidden; /* Prevent content overflow */
 }
+
+button:hover {
+  background-color: #0056b3;
+}

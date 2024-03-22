@@ -1,31 +1,40 @@
 /* The Modal (background) */
 .modal {
-    display: block; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
     padding-bottom: 100px;
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  }
-  
-  /* Modal Content */
-  .modal-content {
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
     display: flex;
     flex-direction: column;
     background-color: #fefefe;
     margin: auto;
     border: 1px solid #888;
     width: fit-content;
-  }
-  
-  /* The Close Button */
-  .close {
+}
+
+/* The Close Button */
+.close {
     width: fit-content;
     height: fit-content;
     align-self: flex-end;
@@ -34,87 +43,87 @@
     margin: 20px;
     font-size: 28px;
     font-weight: bold;
-    
-  }
-  
-  .close:hover,
-  .close:focus {
+
+}
+
+.close:hover,
+.close:focus {
     color: #000;
     text-decoration: none;
     cursor: pointer;
-  }
+}
 
-  .modal-content > div {
+.modal-content>div {
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-content: center;
     margin-bottom: 50px;
-  }
+}
 
-  .modal-content > div > h2 {
+.modal-content>div>h2 {
     text-align: center;
     margin: 15px;
-  }
+}
 
-  .modal-content > div > img {
+.modal-content>div>img {
     align-self: center;
     height: 300px;
     width: 100%;
     max-width: 100%;
     max-height: 300px;
-  }
+}
 
-  input[type="file"]{
+input[type="file"] {
     align-self: center;
     margin-top: 15px;
-  }
+}
 
-  .modal-content > div > form {
+.modal-content>div>form {
     display: flex;
     flex-direction: column;
     margin-bottom: 50px;
-  }
+}
 
-  .bus-coop-form-row {
+.bus-coop-form-row {
     display: flex;
     flex-direction: row;
     width: 100%;
-    justify-content: center;    
-  }
+    justify-content: center;
+}
 
-  .bus-coop-column1 {
+.bus-coop-column1 {
     display: flex;
     justify-content: flex-start;
     width: 30%;
     margin: 5px 15px 5px 15px;
-  }
+}
 
-  .bus-coop-column2 {
+.bus-coop-column2 {
     display: flex;
     justify-content: flex-start;
     width: 70%;
     padding-right: 100px;
     margin: 5px 15px 5px 15px;
-  }
+}
 
-  .bus-coop-column1 label {
+.bus-coop-column1 label {
     font-weight: bold;
     margin-left: 50px;
-  }
+}
 
-  .bus-coop-column2 input {
+.bus-coop-column2 input {
     width: 100%;
     border: 1px solid #000;
-  }
+}
 
-  .bus-coop-column2 textarea {
+.bus-coop-column2 textarea {
     width: 100%;
     height: 100px;
     border: 1px solid #000;
-  }
+}
 
-  #saveBusCoopBtn {
+#saveBusCoopBtn {
     height: fit-content;
     width: 300px;
     align-self: center;
@@ -127,11 +136,15 @@
     transition: all 0.3s ease;
     background: #9488a6;
     cursor: pointer;
-  }
+}
 
-  .divider {
+#saveBusCoopBtn:hover {
+    background-color: #0056b3;
+}
+
+.divider {
     align-self: center;
     margin: 15px 0px 30px 0px;
     width: 80%;
     border-top: 3px solid #bbb;
-  }
+}
