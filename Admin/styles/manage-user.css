@@ -50,8 +50,8 @@
 }
 
 .bus-coop-card img {
+  max-height: 100px;
   flex: 1;
-  background: purple;
 }
 
 .bus-coop-card div {

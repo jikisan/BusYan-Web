@@ -35,7 +35,6 @@ function confirmLogout() {
     const isConfirmed = window.confirm("Are you sure you want to log out?");
     
     if (isConfirmed) {
-        // If the user confirms, call the logoutUser function to log out
         logoutUser();
     }
 }

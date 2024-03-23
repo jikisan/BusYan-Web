@@ -1,3 +1,6 @@
 export const DBPaths = {
-    PASSENGER: 'Passengers'
+    PASSENGER: 'Passengers',
+    BUS_COOP: 'BusCooperatives',
+    ADMIN: 'Admin',
+    BUS_OPERATIOR: 'BusOperators'
 }

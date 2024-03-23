@@ -55,9 +55,7 @@ onAuthStateChanged(auth, (user) => {
                 const contactNum = data.phoneNum;
 
                 fillProfile(fullName, email, contactNum);
-            } else {
-                alert("No data available");
-            }
+            } 
         }).catch((error) => {
             console.error(error);
         });
