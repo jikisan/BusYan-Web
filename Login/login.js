@@ -26,6 +26,8 @@ const db = getDatabase();
 const usernameInput = document.getElementById('usernameInput');
 const passwordInput = document.getElementById('password');
 
+document.getElementById('loginMainForm').addEventListener('submit', loginUser);
+
 function loginUser(event) {
     event.preventDefault();
 
@@ -51,4 +53,3 @@ function loginUser(event) {
 
 }
 
-document.getElementById('loginMainForm').addEventListener('submit', loginUser);
