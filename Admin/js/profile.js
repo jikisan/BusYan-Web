@@ -1,74 +1,127 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getDatabase, get, ref, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { DBPaths } from '/Admin/js/DB.js';
+import { getDatabase, get, set, ref, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 import { convertToPascal } from '/Admin/utils/Utils.js';
-import firebaseConfig from '/CONFIG.js';
+import { DBPaths } from '/Admin/js/DB.js';
+import { fillUserData } from '/Admin/js/sidebar.js'
+
+const myData = JSON.parse(sessionStorage.getItem('currentUser'));
+const db = getDatabase();
+
+const profilePhoto = document.getElementById('profilePhotoId');
+const fullName = document.getElementById('profileFullname');
+const email = document.getElementById('profileEmail');
+const contact = document.getElementById('profileContact');
+const oldPassword = document.getElementById('profileOldPassword');
+const newPassword = document.getElementById('profileNewPassword');
+const confirmPassword = document.getElementById('profileConfirmPassword');
+
+let fileName;
+let file;
 
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const dbRef = ref(getDatabase());
-let data;
+document.getElementById('updateProfileButton').addEventListener('click', saveProfileInDb);
+document.addEventListener('DOMContentLoaded', fillProfile);
 
-document.getElementById('updateProfileButton').addEventListener('click', updateProfile);
+window.addEventListener('load', function () {
+    document.querySelector('#addProfilePicBtn').addEventListener('change', function (event) {
+        if (this.files && this.files[0]) {
+            profilePhoto.onload = () => {
+                URL.revokeObjectURL(profilePhoto.src);
+            }
+            profilePhoto.src = URL.createObjectURL(this.files[0]);
+            fileName = this.files[0].name;
+            file = event.target.files[0];
+        }
+    });
+});
 
-function updateProfile() {
-    // Fetch input values
-    const fullName = document.getElementById('fullname').value;
-    const email = document.getElementById('email').value;
-    const contact = document.getElementById('contact').value;
-    const oldPassword = document.getElementById('oldPassword').value;
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
+function fillProfile() {
+
+    const imgPlaceHolder = '/Admin/images/profile.png';
+
+    fullName.value = convertToPascal(myData.fullName) || 'Loading...';
+    email.value = myData.email || 'Loading...';
+    contact.value = myData.phoneNum || 'Loading...';
+    profilePhoto.src = myData.imageUrl || imgPlaceHolder;
+}
+
+function saveProfileInDb() {
+    showLoader();
+    uploadProfilePhoto();
+}
+
+function uploadProfilePhoto() {
+    const ref = firebase.storage().ref(`${DBPaths.ADMIN}`);
+
+    const metadata = {
+        contentType: file.type
+    };
+
+    const task = ref.child(fileName).put(file, metadata);
+
+    // Monitor the upload progress
+    task.on('state_changed',
+        function (snapshot) {
+            // Handle progress
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+        },
+        function (error) {
+            // Handle errors
+            console.error('Error uploading file: ', error);
+        },
+        function () {
+            // Handle successful upload
+            task.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                console.log(downloadURL);
+                updateProfile(downloadURL);
+                // Save the downloadURL to your database or use it as needed
+            });
+        }
+    );
+}
+
+function updateProfile(url) {
+    console.log(myData);
 
     // Construct data object to send to server
     const data = {
-        fullName: fullName,
-        email: email,
-        contact: contact,
-        oldPassword: oldPassword,
-        newPassword: newPassword,
-        confirmPassword: confirmPassword
+        fullName: fullName.value,
+        email: email.value,
+        imageUrl: url,
+        phoneNum: contact.value
     };
 
-    // Send data to server using AJAX/fetch or any other method
-    console.log(data); // Just for demonstration, you would send this data to server
+    const id = myData.key;
+    const userRef = firebase.database().ref(`${DBPaths.ADMIN}/${id}`);
+    userRef.update(data)
+    .then(() => {
+        myData.key = id;
+        myData.fullName = data.fullName;
+        myData.email = data.email;
+        myData.imageUrl = data.imageUrl;
+        myData.phoneNum = data.phoneNum;
+
+        console.log(myData);
+
+        sessionStorage.setItem('currentUser', JSON.stringify(myData));
+        fillProfile();
+        fillUserData();
+        alert('Profile updated!')
+    })
+    .catch(error => {
+        console.error('Error updating multiple fields:', error);
+    });
+    
+
+    hideLoader();
 }
 
+function showLoader() {
+    const loader = document.querySelector('.loader-container');
+    loader.style.display = 'flex'
+}
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // User is signed in, see docs for a list of available properties
-        const uid = user.uid;
-
-        get(child(dbRef, `/${DBPaths.PASSENGER}/${uid}`))
-        .then((snapshot) => {
-            if (snapshot.exists()) {
-
-                data = snapshot.val();
-
-                const fullName = data.fullName;
-                const email = data.email;
-                const contactNum = data.phoneNum;
-
-                fillProfile(fullName, email, contactNum);
-            } 
-        }).catch((error) => {
-            console.error(error);
-        });
-    } 
-    else {
-        window.location.href = '/login.html'; 
-    }
-});
-
-function fillProfile(fullName, email, contact){
-
-    document.getElementById('fullname').value = convertToPascal(fullName);
-    document.getElementById('email').value = email;
-    document.getElementById('contact').value = contact;
-
+function hideLoader() {    
+    const loader = document.querySelector('.loader-container');
+    loader.style.display = "none";
 }

@@ -1,3 +1,5 @@
+import { convertToPascal } from '/Admin/utils/Utils.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     const menuLinks = document.querySelectorAll('.sidebar ul li');
     menuLinks.forEach(link => {
@@ -57,3 +59,22 @@ function handleMenuItemClick(event) {
     }
 }
 
+window.onload = function() {
+    fillUserData();
+};
+
+export function fillUserData( ) {
+    const myData = JSON.parse(sessionStorage.getItem('currentUser'));
+
+    // Select the elements in the user detail section
+    const userDetail = document.querySelector('.user-detail');
+    const imgElement = userDetail.querySelector('img');
+    const usernameLabel = userDetail.querySelector('label:nth-of-type(1)');
+    const roleLabel = userDetail.querySelector('label:nth-of-type(2)');
+    const imgPlaceHolder = './images/profile.png';
+
+    // Set the values
+    imgElement.src = myData.imageUrl || imgPlaceHolder;
+    usernameLabel.textContent = convertToPascal(myData.fullName);
+    roleLabel.textContent = 'Admin';
+}

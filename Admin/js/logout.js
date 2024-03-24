@@ -18,16 +18,20 @@
 document.getElementById('logoutBtn').addEventListener('click', confirmLogout);
 
 function logoutUser() {
-    signOut(auth)
-      .then(() => {
-        // Redirect the user to the login page or any other page after logout
-        window.location.href = "/login.html"; 
-      })
-      .catch((error) => {
-        console.error("Error signing out:", error);
-        // Handle any errors that occur during logout
-        alert("Error logging out. Please try again.");
-      });
+    // signOut(auth)
+    //   .then(() => {
+    //     // Redirect the user to the login page or any other page after logout
+    //     window.location.href = "/login.html"; 
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error signing out:", error);
+    //     // Handle any errors that occur during logout
+    //     alert("Error logging out. Please try again.");
+    //   });
+
+    window.location.href = '/login.html'; // Replace "dashboard.html" with the URL of the page you want to redirect to
+    sessionStorage.clear();
+
 }
 
 function confirmLogout() {

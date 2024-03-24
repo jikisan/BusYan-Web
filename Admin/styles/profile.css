@@ -1,7 +1,17 @@
 .profile-container {
     display: flex;
     margin: 0 auto;
+    width: 100%;
+    justify-content: center;
 }
+
+.profile-container img {
+    align-self: center;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    border: 2px solid white;
+  }
 
 .column {
     width: 50%; /* Each column takes up 50% of the container */

@@ -55,157 +55,163 @@
       </div>
     </div>
 
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div>
+          <h2>Add Bus Cooperative</h2>
+          <div class="divider"></div>
+
+          <img src="/Admin/images/upload_company_picture.png" alt="bus cooperative" id="busCoopImgBtn">
+          <input type='file' id="addCoopPhotoBtn"/>
+          <div class="divider"></div>
+
+
+          <form action="#" id="addBusCoopForm">
+            <h3>User Details: </h3>
+
+            <div class="bus-coop-form-row">
+              <div class="bus-coop-column1">
+                <label for="fullname">Fullname:</label>
+              </div>
+              <div class="bus-coop-column2">
+                <input type="text" id="coopFullname" name="fullname" required>
+              </div>
+            </div>
+            <div class="bus-coop-form-row">
+              <div class="bus-coop-column1">
+                <label for="email">Email:</label>
+              </div>
+              <div class="bus-coop-column2">
+                <input type="text" id="coopFullEmail" name="email" required>
+              </div>
+            </div>
+            <div class="bus-coop-form-row">
+              <div class="bus-coop-column1">
+                <label for="password">Password:</label>
+              </div>
+              <div class="bus-coop-column2">
+                <input type="password" id="password" name="password" required>
+              </div>
+            </div>
+            <div class="bus-coop-form-row">
+              <div class="bus-coop-column1">
+                <label for="confirm-password">Confirm Password:</label>
+              </div>
+              <div class="bus-coop-column2">
+                <input type="password" id="confirm-password" name="confirm-password" required>
+              </div>
+            </div>
+            <div class="bus-coop-form-row">
+              <div class="bus-coop-column1">
+                <label for="phoneNum">Number:</label>
+              </div>
+              <div class="bus-coop-column2">
+                <input type="text" id="phoneNum" name="phoneNum" required>
+              </div>
+            </div>
+            <div class="divider"></div>
+
+            <h3>Bus Cooperative Details: </h3>
+
+            <div class="bus-coop-form-row">
+              <div class="bus-coop-column1">
+                <label for="companyName">Company Name:</label>
+              </div>
+              <div class="bus-coop-column2">
+                <input type="text" id="companyName" name="companyName" required>
+              </div>
+            </div>
+            <div class="bus-coop-form-row">
+              <div class="bus-coop-column1">
+                <label for="companyAddress">Company Address:</label>
+              </div>
+              <div class="bus-coop-column2">
+                <input type="text" id="companyAddress" name="companyAddress" required>
+              </div>
+            </div>
+            <div class="bus-coop-form-row">
+              <div class="bus-coop-column1">
+                <label for="companyDescription">Company Description:</label>
+              </div>
+              <div class="bus-coop-column2">
+                <textarea id="companyDescription" name="companyDescription" required></textarea>
+              </div>
+            </div>
+            <button type="submit" id="saveBusCoopBtn">SAVE</button>
+          </form>
+
+
+
+        </div>
+      </div>
+    </div>
+
+    <div id="coopModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <div style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;">
+          <button id="deleteCoopBtn">Delete</button>
+          <span class="coopClose">&times;</span>
+        </div>
+        <img src="" alt="bus cooperative" id="busCoopImg">
+        <div class="bus-coop-detail" style="flex-direction: row;">
+          <div class="bus-coop-detail-row">
+            <label for="coopId">ID:</label>
+            <label for="coopFullname">Fullname:</label>
+            <label for="coopEmail">Email:</label>
+            <label for="coopContact">Contact:</label>
+            <label for="coopName">Company Name:</label>
+            <label for="coopAddress">Company Address:</label>
+            <label for="coopDesc">Company Description:</label>
+          </div>
+          <div class="bus-coop-detail-row">
+            <span id="coopId">Loading...</span>
+            <span id="coopFullnameSpan">Loadin...</span>
+            <span id="coopEmail">Loading...</span>
+            <span id="coopContact">Loading...</span>
+            <span id="coopName">Loading...</span>
+            <span id="coopAddress">Loading...</span>
+            <span id="coopDesc">Loading...</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <div class="content-container">
       <div class="dashboard content">
         <h1 class="header">Dashboard</h1>
         <div class="container">
           <div class="card">
             <h3>OVERVIEW</h3>
-            <div class="card-content"></div>
+            <div class="overview-content">
+
+            </div>
           </div>
           <div class="card">
             <h3>DATA</h3>
-            <div class="card-content"></div>
-          </div>
-        </div>
-      </div>
+            <div class="card-content">
 
-      <!-- The Modal -->
-      <div id="myModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-          <span class="close">&times;</span>
-          <div>
-            <h2>Add Bus Cooperative</h2>
-            <div class="divider"></div>
-
-            <img src="/Admin/images/upload_company_picture.png" alt="bus cooperative" id="busCoopImgBtn">
-            <input type='file' />
-            <div class="divider"></div>
-
-
-            <form action="#" id="addBusCoopForm">
-              <h3>Login Details: </h3>
-
-              <div class="bus-coop-form-row">
-                <div class="bus-coop-column1">
-                  <label for="fullname">Fullname:</label>
-                </div>
-                <div class="bus-coop-column2">
-                  <input type="text" id="coopFullname" name="fullname" required>
-                </div>
-              </div>
-              <div class="bus-coop-form-row">
-                <div class="bus-coop-column1">
-                  <label for="email">Email:</label>
-                </div>
-                <div class="bus-coop-column2">
-                  <input type="text" id="coopFullEmail" name="email" required>
-                </div>
-              </div>
-              <div class="bus-coop-form-row">
-                <div class="bus-coop-column1">
-                  <label for="password">Password:</label>
-                </div>
-                <div class="bus-coop-column2">
-                  <input type="password" id="password" name="password" required>
-                </div>
-              </div>
-              <div class="bus-coop-form-row">
-                <div class="bus-coop-column1">
-                  <label for="confirm-password">Confirm Password:</label>
-                </div>
-                <div class="bus-coop-column2">
-                  <input type="password" id="confirm-password" name="confirm-password" required>
-                </div>
-              </div>
-              <div class="bus-coop-form-row">
-                <div class="bus-coop-column1">
-                  <label for="phoneNum">Number:</label>
-                </div>
-                <div class="bus-coop-column2">
-                  <input type="text" id="phoneNum" name="phoneNum" required>
-                </div>
-              </div>
-              <div class="divider"></div>
-
-              <h3>Bus Cooperative Details: </h3>
-
-              <div class="bus-coop-form-row">
-                <div class="bus-coop-column1">
-                  <label for="companyName">Company Name:</label>
-                </div>
-                <div class="bus-coop-column2">
-                  <input type="text" id="companyName" name="companyName" required>
-                </div>
-              </div>
-              <div class="bus-coop-form-row">
-                <div class="bus-coop-column1">
-                  <label for="companyAddress">Company Address:</label>
-                </div>
-                <div class="bus-coop-column2">
-                  <input type="text" id="companyAddress" name="companyAddress" required>
-                </div>
-              </div>
-              <div class="bus-coop-form-row">
-                <div class="bus-coop-column1">
-                  <label for="companyDescription">Company Description:</label>
-                </div>
-                <div class="bus-coop-column2">
-                  <textarea id="companyDescription" name="companyDescription" required></textarea>
-                </div>
-              </div>
-              <button type="submit" id="saveBusCoopBtn">SAVE</button>
-            </form>
-
-
-
-          </div>
-        </div>
-      </div>
-
-      <div id="coopModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-          <div style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;">
-            <button id="deleteCoopBtn">Delete</button>
-            <span class="coopClose">&times;</span>
-          </div>          
-          <img src="" alt="bus cooperative" id="busCoopImg">
-          <div class="bus-coop-detail" style="flex-direction: row;">
-            <div class="bus-coop-detail-row">
-              <label for="coopId">ID:</label>
-              <label for="coopFullname">Fullname:</label>
-              <label for="coopEmail">Email:</label>
-              <label for="coopContact">Contact:</label>
-              <label for="coopName">Company Name:</label>
-              <label for="coopAddress">Company Address:</label>
-              <label for="coopDesc">Company Description:</label>
             </div>
-            <div class="bus-coop-detail-row">
-              <span class="coop-id">Loading...</span>
-              <span class="coop-fullname">Loading...</span>
-              <span class="coop-email">Loading...</span>
-              <span class="coop-contact">Loading...</span>
-              <span class="coop-name">Loading...</span>
-              <span class="coop-address">Loading...</span>
-              <span class="coop-desc">Loading...</span>
-            </div>
-
           </div>
         </div>
       </div>
+
+
 
       <div class="manage-user content" style="display: none">
         <h1 class="header">Manage Users</h1>
         <div class="container">
           <div class="card" style="display: flex; flex-direction: column;">
 
-
-
             <div class="wrap">
               <div class="search">
-                <input type="text" class="searchTerm" placeholder="Search" />
+                <input id="searchInput" type="text" class="searchTerm" placeholder="Search" />
+                <ul id="searchResults"></ul>
+
               </div>
             </div>
 
@@ -232,21 +238,26 @@
         <div class="container">
           <div class="card">
 
+            <div class="profile-container" style="flex-direction: column; margin-bottom: 30px;">
+              <img src="./images/profile.png" alt="profile" id="profilePhotoId"/>
+              <input type="file" id="addProfilePicBtn">
+            </div>
+
             <div class="profile-container">
 
               <div class="column">
                 <h2>Profile</h2>
                 <div class="form-group">
                   <label for="fullname">Full Name:</label>
-                  <input type="text" id="fullname" name="fullname">
+                  <input type="text" id="profileFullname" name="profileFullname">
                 </div>
                 <div class="form-group">
                   <label for="email">Email:</label>
-                  <input type="email" id="email" name="email" readonly>
+                  <input type="email" id="profileEmail" name="profileEmail" readonly>
                 </div>
                 <div class="form-group">
                   <label for="contact">Contact Number:</label>
-                  <input type="text" id="contact" name="contact">
+                  <input type="text" id="profileContact" name="profileContact">
                 </div>
               </div>
 
@@ -254,15 +265,15 @@
                 <h2>Password</h2>
                 <div class="form-group">
                   <label for="oldPassword">Old Password:</label>
-                  <input type="password" id="oldPassword" name="oldPassword">
+                  <input type="password" id="profileOldPassword" name="profileOldPassword">
                 </div>
                 <div class="form-group">
                   <label for="newPassword">New Password:</label>
-                  <input type="password" id="newPassword" name="newPassword">
+                  <input type="password" id="profileNewPassword" name="profileNewPassword">
                 </div>
                 <div class="form-group">
                   <label for="confirmPassword">Confirm New Password:</label>
-                  <input type="password" id="confirmPassword" name="confirmPassword">
+                  <input type="password" id="profileConfirmPassword" name="profileConfirmPassword">
                 </div>
               </div>
 
@@ -278,13 +289,12 @@
       </div>
     </div>
   </div>
-  <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js ">
-  </script>
+
+  <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js "></script>
   <script src="./js/manage-user.js" type="module"></script>
   <script src="./js/profile.js" type="module"></script>
   <script src="./js/sidebar.js" type="module"></script>
   <script src="./js/logout.js" type="module"></script>
-
 </body>
 
 </html>

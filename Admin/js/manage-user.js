@@ -1,10 +1,10 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getDatabase, get, set, ref, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
-import { convertToPascal } from '/Admin/utils/Utils.js';
+import { convertToPascal, getCurrentDateTimeInMillis } from '/Admin/utils/Utils.js';
 import { DBPaths } from '/Admin/js/DB.js';
 import firebaseConfig from '/CONFIG.js';
 
@@ -15,6 +15,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const dbRef = ref(getDatabase());
 const db = getDatabase();
+
+const myData = JSON.parse(sessionStorage.getItem('currentUser'));
 
 const modal = document.getElementById("myModal");
 const coopModal = document.getElementById("coopModal");
@@ -36,64 +38,34 @@ const companyDescription = document.getElementById('companyDescription');
 let data;
 let fileName;
 let file;
+let busCoopArray = [];
 
-document.querySelector('.close').addEventListener('click', hideAddBusCoopModal);
 document.getElementById('addBusCoopBtn').addEventListener('click', showAddBusCoopModal);
-document.querySelector('.coopClose').addEventListener('click', hideCoopModal);
 document.getElementById('addBusCoopForm').addEventListener('submit', addBusCoop);
+document.querySelector('.close').addEventListener('click', hideAddBusCoopModal);
+document.getElementById('deleteCoopBtn').addEventListener('click', deleteBusCoop);
+document.getElementById('searchInput').addEventListener('input', handleSearchInput);
+document.querySelector('.coopClose').addEventListener('click', hideCoopModal);
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-
-        const uid = user.uid;
-
-        get(child(dbRef, `${DBPaths.PASSENGER}/${uid}`))
-        .then((snapshot) => {
-            if (snapshot.exists()) {
-
-                data = snapshot.val();
-                const fullName = data.fullName;
-                const imageUrl = data.imageUrl;
-
-                fillUserData(imageUrl, fullName, '');
-            }
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-
-            getBusCoop();
-
-    }
-    else {
-        window.location.href = '/login.html'; // Replace "dashboard.html" with the URL of the page you want to redirect to
-    }
-});
-
-function fillUserData(imageSrc, username, role) {
-
-    // Select the elements in the user detail section
-    const userDetail = document.querySelector('.user-detail');
-    const imgElement = userDetail.querySelector('img');
-    const usernameLabel = userDetail.querySelector('label:nth-of-type(1)');
-    const roleLabel = userDetail.querySelector('label:nth-of-type(2)');
-
-    // Set the values
-    imgElement.src = imageSrc;
-    usernameLabel.textContent = convertToPascal(username);
-    roleLabel.textContent = 'Admin';
-}
-
+document.addEventListener('DOMContentLoaded', getBusCoop);
 
 function getBusCoop() {
+    console.log(myData);
+    const busCoopContainer = document.querySelector('.bus-coop-container');
+    busCoopContainer.innerHTML = "";
+    busCoopArray = [];
+    showLoader();
 
     const coopRef = database.ref(`${DBPaths.BUS_COOP}`);
 
-    coopRef.once('value', (snapshot) => {
+    coopRef.once('value',
+        (snapshot) => {
             snapshot.forEach((coop) => {
 
                 const coopKey = coop.key;
                 const coopData = coop.val();
+                coopData["key"] = coopKey;
+                busCoopArray.push(coopData);
 
                 const companyName = coopData.companyName;
                 const coopImage = coopData.imgSrc;
@@ -101,9 +73,12 @@ function getBusCoop() {
                 createBusCoopCard(companyName, coopImage, coopKey);
             });
 
+            hideLoader();
 
         }
     )
+
+
 }
 
 function createBusCoopCard(companyName, imageUrl, key) {
@@ -125,11 +100,10 @@ function createBusCoopCard(companyName, imageUrl, key) {
     cardDiv.appendChild(nameDiv);
 
     cardDiv.addEventListener('click', showCoopModal.bind(null, key));
-    
+
     // Append the cardDiv to the parent div with class bus-coop-container
     parentDiv.appendChild(cardDiv);
 }
-
 
 function showAddBusCoopModal() {
     modal.style.display = "block";
@@ -157,27 +131,17 @@ function showCoopModal(key) {
         .then((snapshot) => {
             if (snapshot.exists()) {
 
-                let img = document.getElementById('busCoopImg');
-                let idElement = document.querySelector('.coop-id').value;
-                let fullnameElement = document.querySelector('.coop-fullname').value;
-                let emailElement = document.querySelector('.coop-email').value;
-                let contactElement = document.querySelector('.coop-contact').value;
-                let nameElement = document.querySelector('.coop-name').value;
-                let addressElement = document.querySelector('.coop-address').value;
-                let descElement = document.querySelector('.coop-desc').value;
-
                 data = snapshot.val();
-                console.log(data);
+                const fullName = convertToPascal(data.fullname);
 
-                img.src = data.imgSrc;
-                idElement = key;
-                // fullnameElement = data.fullname;
-                // emailElement = data.email;
-                // contactElement = data.phoneNum;
-                // nameElement = data.companyName;
-                // addressElement = data.companyAddress;
-                // descElement = data.companyDescription;
-
+                document.getElementById('busCoopImg').src = data.imgSrc;;
+                document.getElementById('coopId').textContent = key;
+                document.getElementById('coopFullnameSpan').textContent = fullName;
+                document.getElementById('coopEmail').textContent = data.email;
+                document.getElementById('coopContact').textContent = data.phoneNum;
+                document.getElementById('coopName').textContent = data.companyName;
+                document.getElementById('coopAddress').textContent = data.companyAddress;
+                document.getElementById('coopDesc').textContent = data.companyDescription;
             }
         })
         .catch((error) => {
@@ -252,26 +216,36 @@ function createAccount(downloadURL) {
         datetimeAdded: new Date().toISOString()
     };
 
-    console.log(busCoopData);
+    // createUserWithEmailAndPassword(auth, busCoopData.email, passwordInput.value)
+    //     .then((userCredential) => {
+    //         const userId = userCredential.user.uid;
 
-    createUserWithEmailAndPassword(auth, busCoopData.email, passwordInput.value)
-        .then((userCredential) => {
-            const userId = userCredential.user.uid;
+    //         const user = auth.currentUser;
+    //         console.log(user);
 
-            const userRef = ref(db, `${DBPaths.BUS_COOP}/${userId}`);
-            set(userRef, busCoopData);
+            
+    //     })
+    //     .catch((error) => {
+    //         // const errorCode = error.code;
+    //         // const errorMessage = error.message;
+    //         // Handle errors like invalid email or password
+    //         alert(`createUserWithEmailAndPassword: ${error.message}`);
+    //     }
+    //     );
 
-            parentDiv.innerHTML = ''
-            getBusCoop();
+    const id = getCurrentDateTimeInMillis();
+    const userRef = ref(db, `${DBPaths.BUS_COOP}/${id}`);
+    set(userRef, busCoopData)
+        .then(() => {
             hideAddBusCoopModal();
+            getBusCoop();
         })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // Handle errors like invalid email or password
-            alert(`${errorMessage}`);
-        }
-        );
+        .catch(error => {
+            // An error occurred while setting data
+            console.error('Error setting data:', error);
+        });
+            
+    
 
     hideLoader();
 }
@@ -284,6 +258,60 @@ function hideLoader() {
     loader.style.display = "none";
 }
 
+function deleteBusCoop() {
+
+    const isConfirmed = window.confirm("Are you sure you want to remove this account?");
+
+    if(isConfirmed) {
+        const key = document.getElementById('coopId').textContent;
+        const dbRef = firebase.database().ref(`${DBPaths.BUS_COOP}/${key}`);
+            
+        dbRef.remove()
+            .then(() => {
+                console.log('User data deleted successfully.');                
+                signInWithEmailAndPassword
+                getBusCoop();
+                hideCoopModal();
+                
+            })
+            .catch((error) => {
+                console.error('Error deleting user data:', error);
+            });
+    }
+    
+
+}
+
+function handleSearchInput() {
+
+    const busCoopContainer = document.querySelector('.bus-coop-container');
+    busCoopContainer.innerHTML = "";
+
+    const searchInput = document.getElementById("searchInput");
+    const searchTerm = searchInput.value.toLowerCase().trim();
+
+    // Filter data based on search term
+    const results = busCoopArray.filter(item => item.companyName.toLowerCase().includes(searchTerm));
+    // Render search results
+    renderResults(results);
+}
+
+function renderResults(results) {
+    const searchResults = document.getElementById("searchResults");
+    searchResults.innerHTML = "";
+
+    console.log(results);
+
+    results.forEach(result => {
+
+        const companyName = result.companyName;
+        const coopImage = result.imgSrc;
+        const key = result.key;
+
+        createBusCoopCard(companyName, coopImage, key);
+    });
+}
+
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function (event) {
     if (event.target == modal) {
@@ -292,7 +320,7 @@ window.onclick = function (event) {
 }
 
 window.addEventListener('load', function () {
-    document.querySelector('input[type="file"]').addEventListener('change', function (event) {
+    document.querySelector('#addCoopPhotoBtn').addEventListener('change', function (event) {
         if (this.files && this.files[0]) {
             img.onload = () => {
                 URL.revokeObjectURL(img.src);

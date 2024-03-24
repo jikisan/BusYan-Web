@@ -1,27 +1,8 @@
- // Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getDatabase, get, ref, child} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { DBPaths } from '/Admin/js/DB.js';
+import firebaseConfig from '/CONFIG.js';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyClxrx1JHZKzdnoQpeGU0xdhSe4Szn9LX0",
-    authDomain: "busyan-capstone-3430e.firebaseapp.com",
-    databaseURL: "https://busyan-capstone-3430e-default-rtdb.firebaseio.com",
-    projectId: "busyan-capstone-3430e",
-    storageBucket: "busyan-capstone-3430e.appspot.com",
-    messagingSenderId: "513683055597",
-    appId: "1:513683055597:web:40dc2ff730a1c6b5b07de4",
-    measurementId: "G-NZXE0XTWWH"
-};
-
-// Initialize Firebase
-// firebase.initializeApp(firebaseConfig);
-
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth = getAuth(app);
-const db = getDatabase();
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
 
 const usernameInput = document.getElementById('usernameInput');
 const passwordInput = document.getElementById('password');
@@ -34,21 +15,32 @@ function loginUser(event) {
     const username = usernameInput.value;
     const password = passwordInput.value;
 
-    signInWithEmailAndPassword(auth, username, password)
-      .then((userCredential) => {
-        const userId = userCredential.user.uid; // Get the user ID
+    const userRef = database.ref(`${DBPaths.ADMIN}`);
 
-        window.location.href = './Admin/admin.html'; // Replace "dashboard.html" with the URL of the page you want to redirect to
+    let accountExists = false; // Flag to track if the account exists
 
+    userRef.once('value', (snapshot) => {
+        snapshot.forEach((user) => {
+            const userKey = user.key;
+            const data = user.val();
+            const dbEmail = data.email; // Access email from user data
+            const dbPassword = data.password; // Access password from user data
 
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // Handle errors like invalid email or password
-        console.error(errorCode, errorMessage);
-        alert(errorMessage);
-      });
+            if (username === dbEmail && password == dbPassword) {
+              window.location.href = './Admin/admin.html'; // Redirect if credentials match
+              accountExists = true; // Set flag to true if account exists
+              data["key"] = userKey;
+              sessionStorage.setItem('currentUser', JSON.stringify(data));
+              return;
+            }
+
+            return
+        });
+
+        if (!accountExists) {
+            alert('Account does not exist');
+        }
+    });
 
 
 }
