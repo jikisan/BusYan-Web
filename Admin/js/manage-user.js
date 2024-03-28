@@ -8,7 +8,6 @@ import { convertToPascal, getCurrentDateTimeInMillis } from '/Admin/utils/Utils.
 import { DBPaths } from '/Admin/js/DB.js';
 import firebaseConfig from '/CONFIG.js';
 
-firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
 const app = initializeApp(firebaseConfig);
@@ -24,6 +23,7 @@ const loader = document.querySelector('.loader-container');
 const parentDiv = document.querySelector('.bus-coop-container');
 
 const img = document.getElementById('busCoopImgBtn');
+const busCoopUserPhoto = document.getElementById('busCoopUserPhoto');
 
 const fullnameInput = document.getElementById('coopFullname');
 const emailInput = document.getElementById('coopFullEmail');
@@ -37,7 +37,9 @@ const companyDescription = document.getElementById('companyDescription');
 
 let data;
 let fileName;
+let fileNameUserPhoto;
 let file;
+let fileUserPhoto;
 let busCoopArray = [];
 
 document.getElementById('addBusCoopBtn').addEventListener('click', showAddBusCoopModal);
@@ -50,7 +52,7 @@ document.querySelector('.coopClose').addEventListener('click', hideCoopModal);
 document.addEventListener('DOMContentLoaded', getBusCoop);
 
 function getBusCoop() {
-    console.log(myData);
+    
     const busCoopContainer = document.querySelector('.bus-coop-container');
     busCoopContainer.innerHTML = "";
     busCoopArray = [];
@@ -134,11 +136,13 @@ function showCoopModal(key) {
                 data = snapshot.val();
                 const fullName = convertToPascal(data.fullname);
 
-                document.getElementById('busCoopImg').src = data.imgSrc;;
+                document.getElementById('busUserCoopImg').src = data.usesImgSrc;;
                 document.getElementById('coopId').textContent = key;
                 document.getElementById('coopFullnameSpan').textContent = fullName;
                 document.getElementById('coopEmail').textContent = data.email;
                 document.getElementById('coopContact').textContent = data.phoneNum;
+
+                document.getElementById('busCoopImg').src = data.imgSrc;;
                 document.getElementById('coopName').textContent = data.companyName;
                 document.getElementById('coopAddress').textContent = data.companyAddress;
                 document.getElementById('coopDesc').textContent = data.companyDescription;
@@ -159,15 +163,8 @@ function addBusCoop(event) {
     const isConfirmed = window.confirm("Are you sure all information are correct?");
 
     if (isConfirmed) {
-        saveInDb();
-    }
-
-}
-
-function saveInDb() {
-
-    showLoader();
-    uploadBusCoopImage();
+        showLoader();
+        uploadBusCoopImage();    }
 
 }
 
@@ -186,7 +183,7 @@ function uploadBusCoopImage() {
         function (snapshot) {
             // Handle progress
             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log('Upload is ' + progress + '% done');
+            console.log('Upload bus coop photo is ' + progress + '% done');
         },
         function (error) {
             // Handle errors
@@ -195,43 +192,55 @@ function uploadBusCoopImage() {
         function () {
             // Handle successful upload
             task.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-                createAccount(downloadURL);
-                // Save the downloadURL to your database or use it as needed
+                uploadBusCoopUserImage(downloadURL);
             });
         }
     );
 
 }
 
-function createAccount(downloadURL) {
+function uploadBusCoopUserImage(busCoopImageUrl) {
+    const ref = firebase.storage().ref(`${DBPaths.BUS_COOP}`);
+
+    const metadata = {
+        contentType: file.type
+    };
+
+    const task = ref.child(fileNameUserPhoto).put(fileUserPhoto, metadata);
+
+    // Monitor the upload progress
+    task.on('state_changed',
+        function (snapshot) {
+            // Handle progress
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload user photo is ' + progress + '% done');
+        },
+        function (error) {
+            // Handle errors
+            console.error('Error uploading file: ', error);
+        },
+        function () {
+            // Handle successful upload
+            task.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                createAccount(busCoopImageUrl, downloadURL);
+            });
+        }
+    );
+}
+
+function createAccount(busCoopImageUrl, busCoopUserImageUrl) {
 
     const busCoopData = {
         fullname: fullnameInput.value,
         email: emailInput.value,
         phoneNum: phoneNumInput.value,
-        imgSrc: downloadURL,
+        imgSrc: busCoopImageUrl,
+        usesImgSrc: busCoopUserImageUrl,
         companyName: companyName.value,
         companyAddress: companyAddress.value,
         companyDescription: companyDescription.value,
         datetimeAdded: new Date().toISOString()
     };
-
-    // createUserWithEmailAndPassword(auth, busCoopData.email, passwordInput.value)
-    //     .then((userCredential) => {
-    //         const userId = userCredential.user.uid;
-
-    //         const user = auth.currentUser;
-    //         console.log(user);
-
-            
-    //     })
-    //     .catch((error) => {
-    //         // const errorCode = error.code;
-    //         // const errorMessage = error.message;
-    //         // Handle errors like invalid email or password
-    //         alert(`createUserWithEmailAndPassword: ${error.message}`);
-    //     }
-    //     );
 
     const id = getCurrentDateTimeInMillis();
     const userRef = ref(db, `${DBPaths.BUS_COOP}/${id}`);
@@ -328,6 +337,19 @@ window.addEventListener('load', function () {
             img.src = URL.createObjectURL(this.files[0]);
             fileName = this.files[0].name;
             file = event.target.files[0];
+        }
+    });
+});
+
+window.addEventListener('load', function () {
+    document.querySelector('#busCoopUserPhotoBtn').addEventListener('change', function (event) {
+        if (this.files && this.files[0]) {
+            busCoopUserPhoto.onload = () => {
+                URL.revokeObjectURL(busCoopUserPhoto.src);
+            }
+            busCoopUserPhoto.src = URL.createObjectURL(this.files[0]);
+            fileNameUserPhoto = this.files[0].name;
+            fileUserPhoto = event.target.files[0];
         }
     });
 });

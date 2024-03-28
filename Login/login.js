@@ -11,13 +11,12 @@ document.getElementById('loginMainForm').addEventListener('submit', loginUser);
 
 function loginUser(event) {
     event.preventDefault();
-
+    
+    let accountExists = false; // Flag to track if the account exists
+    
+    const userRef = database.ref(`${DBPaths.ADMIN}`);
     const username = usernameInput.value;
     const password = passwordInput.value;
-
-    const userRef = database.ref(`${DBPaths.ADMIN}`);
-
-    let accountExists = false; // Flag to track if the account exists
 
     userRef.once('value', (snapshot) => {
         snapshot.forEach((user) => {

@@ -45,8 +45,42 @@ function fillProfile() {
 }
 
 function saveProfileInDb() {
+    const profilePicInput = document.getElementById('addProfilePicBtn');
+
     showLoader();
-    uploadProfilePhoto();
+
+    if (profilePicInput && (profilePicInput.files.length === 0 || profilePicInput.value === '')) {
+        updateProfile(myData.imageUrl);
+    } else {
+        uploadProfilePhoto();
+    }
+
+     // Check if all inputs are empty
+     if (oldPassword.value === '' && newPassword.value === '' && confirmPassword.value === '') {
+        hideLoader();
+        return;
+    } 
+    else {
+        // Check if old password matches the saved password
+        if (oldPassword.value !== myData.password) {
+            alert('Old password does not match.');
+            hideLoader();
+            return;
+        }
+
+        // Check if new password matches the confirm password
+        if (newPassword.value !== confirmPassword.value) {
+            alert('New password and confirm password do not match.');
+            hideLoader();
+            return;
+        }
+
+        savePassword(newPassword.value);
+    }
+
+    
+    hideLoader();
+
 }
 
 function uploadProfilePhoto() {
@@ -81,8 +115,6 @@ function uploadProfilePhoto() {
 }
 
 function updateProfile(url) {
-    console.log(myData);
-
     // Construct data object to send to server
     const data = {
         fullName: fullName.value,
@@ -91,29 +123,54 @@ function updateProfile(url) {
         phoneNum: contact.value
     };
 
+    if ( data.fullName !== myData.fullName ||
+         data.email !== myData.email ||
+         data.imageUrl !== myData.imageUrl ||
+         data.phoneNum !== myData.phoneNum){
+            const id = myData.key;
+            const userRef = firebase.database().ref(`${DBPaths.ADMIN}/${id}`);
+            userRef.update(data)
+            .then(() => {
+                myData.key = id;
+                myData.fullName = data.fullName;
+                myData.email = data.email;
+                myData.imageUrl = data.imageUrl;
+                myData.phoneNum = data.phoneNum;
+
+                sessionStorage.setItem('currentUser', JSON.stringify(myData));
+                fillProfile();
+                fillUserData();
+                alert('Profile updated!')
+            })
+            .catch(error => {
+                console.error('Error updating multiple fields:', error);
+            });
+    
+        }
+
+    
+
+}
+
+function savePassword(newPassword) {
+
     const id = myData.key;
+
+    const data = {
+        password: newPassword,
+    };
+
     const userRef = firebase.database().ref(`${DBPaths.ADMIN}/${id}`);
     userRef.update(data)
     .then(() => {
-        myData.key = id;
-        myData.fullName = data.fullName;
-        myData.email = data.email;
-        myData.imageUrl = data.imageUrl;
-        myData.phoneNum = data.phoneNum;
-
-        console.log(myData);
-
+        myData.password = data.password;
         sessionStorage.setItem('currentUser', JSON.stringify(myData));
-        fillProfile();
-        fillUserData();
-        alert('Profile updated!')
+
+        alert('Password updated!')
     })
     .catch(error => {
-        console.error('Error updating multiple fields:', error);
+        console.error('Change Password Error:', error);
     });
-    
-
-    hideLoader();
 }
 
 function showLoader() {

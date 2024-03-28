@@ -1,4 +1,4 @@
-.card span {
+.card > span {
   align-self: center;
   text-align: center;
   padding: 5px;
@@ -63,4 +63,12 @@
   /* Center vertically */
   text-align: center;
   /* Center text horizontally */
+}
+
+#busUserCoopImg {
+  align-self: center;
+  border-radius: 50%;
+  width: 350px;
+  height: 350px;
+  border: 2px solid white;
 }

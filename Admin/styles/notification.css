@@ -1,4 +1,4 @@
-.dashboard-items {
+.notification-items {
     height: 63px;
     width: 100%;
     padding: 25px;
@@ -7,6 +7,11 @@
     align-content: center;
     background: #f4f1fa;
     font-weight: bold;
-    border-radius: 15px;
     margin-top: 10px;
+    overflow: hidden;
+}
+
+.notif-item {
+    margin-left: 35px;
+    font-size: 15px;
 }
