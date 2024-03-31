@@ -70,7 +70,7 @@ function getBusCoop() {
                 busCoopArray.push(coopData);
 
                 const companyName = coopData.companyName;
-                const coopImage = coopData.imgSrc;
+                const coopImage = coopData.imgUrl;
 
                 createBusCoopCard(companyName, coopImage, coopKey);
             });
@@ -134,15 +134,15 @@ function showCoopModal(key) {
             if (snapshot.exists()) {
 
                 data = snapshot.val();
-                const fullName = convertToPascal(data.fullname);
+                const fullName = convertToPascal(data.fullName);
 
-                document.getElementById('busUserCoopImg').src = data.usesImgSrc;;
+                document.getElementById('busUserCoopImg').src = data.userImgSrc;;
                 document.getElementById('coopId').textContent = key;
                 document.getElementById('coopFullnameSpan').textContent = fullName;
                 document.getElementById('coopEmail').textContent = data.email;
                 document.getElementById('coopContact').textContent = data.phoneNum;
 
-                document.getElementById('busCoopImg').src = data.imgSrc;;
+                document.getElementById('busCoopImg').src = data.imgUrl;;
                 document.getElementById('coopName').textContent = data.companyName;
                 document.getElementById('coopAddress').textContent = data.companyAddress;
                 document.getElementById('coopDesc').textContent = data.companyDescription;
@@ -160,11 +160,15 @@ function hideCoopModal() {
 function addBusCoop(event) {
     event.preventDefault();
 
+    
     const isConfirmed = window.confirm("Are you sure all information are correct?");
 
     if (isConfirmed) {
-        showLoader();
-        uploadBusCoopImage();    }
+        if (busCoopLoginDetailsIsValid()) {
+            showLoader();
+            uploadBusCoopImage();    
+        }
+    }
 
 }
 
@@ -231,11 +235,12 @@ function uploadBusCoopUserImage(busCoopImageUrl) {
 function createAccount(busCoopImageUrl, busCoopUserImageUrl) {
 
     const busCoopData = {
-        fullname: fullnameInput.value,
+        fullName: fullnameInput.value,
         email: emailInput.value,
+        password: passwordInput.value,
         phoneNum: phoneNumInput.value,
-        imgSrc: busCoopImageUrl,
-        usesImgSrc: busCoopUserImageUrl,
+        imgUrl: busCoopImageUrl,
+        userImgSrc: busCoopUserImageUrl,
         companyName: companyName.value,
         companyAddress: companyAddress.value,
         companyDescription: companyDescription.value,
@@ -264,7 +269,9 @@ function showLoader() {
 }
 
 function hideLoader() {
-    loader.style.display = "none";
+    setTimeout(function() {
+        loader.style.display = "none";
+    }, 2000); // 3000 milliseconds = 3 seconds
 }
 
 function deleteBusCoop() {
@@ -356,37 +363,55 @@ window.addEventListener('load', function () {
 
 // Function to validate form inputs
 function busCoopLoginDetailsIsValid() {
-    let isValid = true;
+    // Check if bus cooperative photo is different from the placeholder image
+    const busCoopImgNotValid = img.src.includes('/Admin/images/upload_company_picture.png');
+
+    // Check if user photo is different from the placeholder image
+    const busCoopUserPhotoNotValid = busCoopUserPhoto.src.includes('/Admin//images/profile.png');
 
     // Validate Email
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(emailInput.value.trim())) {
-        isValid = false;
-        alert('Please enter a valid email address');
-        return isValid;
-    }
-
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
+    
     // Validate Password
-    if (passwordInput.value.trim().length < 8) {
-        isValid = false;
-        alert('Password must be at least 6 characters long');
-        return isValid;
-    }
-
+    const passwordValid = passwordInput.value.trim().length >= 8;
+    
     // Validate Confirm Password
-    if (confirmPasswordInput.value.trim() !== passwordInput.value.trim()) {
-        isValid = false;
-        alert('Passwords do not match');
-        return isValid;
-    }
-
+    const confirmPasswordValid = confirmPasswordInput.value.trim() === passwordInput.value.trim();
+    
     // Validate Phone Number
-    const phoneNumPattern = /^\d{11}$/; // Assuming phone number is 10 digits
-    if (!phoneNumPattern.test(phoneNumInput.value.trim())) {
-        isValid = false;
-        alert('Please enter a valid 10-digit phone number');
-        return isValid;
+    const phoneNumValid = /^\d{11}$/.test(phoneNumInput.value.trim());
+
+    if (busCoopImgNotValid) {
+        alert('Please select a bus cooperative photo');
+        return false;
     }
 
-    return isValid;
+    if (busCoopUserPhotoNotValid) {
+        alert('Please select a user photo');
+        return false;
+    }
+
+    if (!emailValid) {
+        alert('Please enter a valid email address');
+        return false;
+    }
+
+    if (!passwordValid) {
+        alert('Password must be at least 8 characters long');
+        return false;
+    }
+
+    if (!confirmPasswordValid) {
+        alert('Passwords do not match');
+        return false;
+    }
+
+    if (!phoneNumValid) {
+        alert('Please enter a valid 11-digit phone number');
+        return false;
+    }
+
+    return true;
 }
+
+

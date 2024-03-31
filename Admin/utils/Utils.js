@@ -1,6 +1,6 @@
 export const convertToPascal = (str) => {
 
-    if (str === null || typeof (null) === undefined) {
+    if (str == null) {
         return str;
     }
     else {
