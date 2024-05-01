@@ -244,6 +244,7 @@ function createAccount(busCoopImageUrl, busCoopUserImageUrl) {
         companyName: companyName.value,
         companyAddress: companyAddress.value,
         companyDescription: companyDescription.value,
+        createdBy: myData.key,
         datetimeAdded: new Date().toISOString()
     };
 
