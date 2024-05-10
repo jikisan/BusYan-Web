@@ -22,8 +22,12 @@ const coopModal = document.getElementById("coopModal");
 const loader = document.querySelector('.loader-container');
 const parentDiv = document.querySelector('.bus-coop-container');
 
-const img = document.getElementById('busCoopImgBtn');
 const busCoopUserPhoto = document.getElementById('busCoopUserPhoto');
+const busCoopUserPhotoBtn = document.getElementById('busCoopUserPhotoBtn');
+
+const img = document.getElementById('busCoopImgBtn');
+const addCoopPhotoBtn = document.getElementById('addCoopPhotoBtn');
+
 
 const fullnameInput = document.getElementById('coopFullname');
 const emailInput = document.getElementById('coopFullEmail');
@@ -41,18 +45,21 @@ let fileNameUserPhoto;
 let file;
 let fileUserPhoto;
 let busCoopArray = [];
+let action;
+let currentCoop;
 
-document.getElementById('addBusCoopBtn').addEventListener('click', showAddBusCoopModal);
-document.getElementById('addBusCoopForm').addEventListener('submit', addBusCoop);
+document.getElementById('addBusCoopBtn').addEventListener('click', addBusCoop);
+document.getElementById('addBusCoopForm').addEventListener('submit', saveBusCoopInDb);
 document.querySelector('.close').addEventListener('click', hideAddBusCoopModal);
 document.getElementById('deleteCoopBtn').addEventListener('click', deleteBusCoop);
+document.getElementById('editCoopBtn').addEventListener('click', editBusCoop);
 document.getElementById('searchInput').addEventListener('input', handleSearchInput);
 document.querySelector('.coopClose').addEventListener('click', hideCoopModal);
 
 document.addEventListener('DOMContentLoaded', getBusCoop);
 
 function getBusCoop() {
-    
+
     const busCoopContainer = document.querySelector('.bus-coop-container');
     busCoopContainer.innerHTML = "";
     busCoopArray = [];
@@ -107,7 +114,27 @@ function createBusCoopCard(companyName, imageUrl, key) {
     parentDiv.appendChild(cardDiv);
 }
 
+function addBusCoop() {
+    action = "add";
+    img.src = "/Admin/images/upload_company_picture.png"; // Reset bus cooperative image
+    busCoopUserPhoto.src = "/Admin/images/profile.png";  // Reset user photo
+
+    // Clear text input fields
+    fullnameInput.value = "";
+    emailInput.value = "";
+    passwordInput.value = "";
+    confirmPasswordInput.value = "";
+    phoneNumInput.value = "";
+
+    // Clear company-related fields
+    companyName.value = "";
+    companyAddress.value = "";
+    companyDescription.value = "";
+    showAddBusCoopModal();
+}
+
 function showAddBusCoopModal() {
+
     modal.style.display = "block";
 }
 
@@ -134,6 +161,9 @@ function showCoopModal(key) {
             if (snapshot.exists()) {
 
                 data = snapshot.val();
+                const key = snapshot.key;
+                data["key"] = key;
+                currentCoop = data;
                 const fullName = convertToPascal(data.fullName);
 
                 document.getElementById('busUserCoopImg').src = data.userImgSrc;;
@@ -157,17 +187,51 @@ function hideCoopModal() {
     coopModal.style.display = "none";
 }
 
-function addBusCoop(event) {
+function saveBusCoopInDb(event) {
     event.preventDefault();
 
-    
+
     const isConfirmed = window.confirm("Are you sure all information are correct?");
 
     if (isConfirmed) {
         if (busCoopLoginDetailsIsValid()) {
+
             showLoader();
-            uploadBusCoopImage();    
+
+            switch (action) {
+                case "add":
+                    showLoader();
+                    uploadBusCoopImage();
+                    break;
+                case "edit":
+                    validateImages();
+                    break;
+            }
+
         }
+    }
+
+    hideLoader();
+
+}
+
+function validateImages() {
+
+    const addCoopPhotoBtnIsEmpty = addCoopPhotoBtn.files.length === 0 || addCoopPhotoBtn.value === '';
+    const busCoopUserPhotoBtnIsEmpty = busCoopUserPhotoBtn.files.length === 0 || busCoopUserPhotoBtn.value === '';
+
+
+    if (addCoopPhotoBtnIsEmpty && busCoopUserPhotoBtnIsEmpty) {
+
+        console.log("no photos")
+        updateCoop();
+    }
+    else if (!addCoopPhotoBtnIsEmpty && busCoopUserPhotoBtnIsEmpty) {
+        console.log("with bus coop photo")
+        uploadBusCoopImage();
+    }
+    else if (!busCoopUserPhotoBtnIsEmpty) {
+        uploadBusCoopUserImageEdit();
     }
 
 }
@@ -196,7 +260,21 @@ function uploadBusCoopImage() {
         function () {
             // Handle successful upload
             task.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-                uploadBusCoopUserImage(downloadURL);
+
+                switch (action) {
+                    case "add":
+                        updateCoop();
+                        break;
+                    case "edit":
+                        if (busCoopUserPhotoBtn && (busCoopUserPhotoBtn.files.length === 0 || busCoopUserPhotoBtn.value === '')) {
+                            updateCoop(downloadURL, currentCoop.userImgSrc);
+                        }
+                        else {
+                            uploadBusCoopUserImage(downloadURL);
+                        }
+                        break;
+                }
+
             });
         }
     );
@@ -226,10 +304,75 @@ function uploadBusCoopUserImage(busCoopImageUrl) {
         function () {
             // Handle successful upload
             task.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-                createAccount(busCoopImageUrl, downloadURL);
+
+                switch (action) {
+                    case "add":
+                        createAccount(busCoopImageUrl, downloadURL);
+                        break;
+                    case "edit":
+                        updateCoop(currentCoop.imgUrl, downloadURL);
+                        break;
+                }
             });
         }
     );
+}
+
+function uploadBusCoopUserImageEdit() {
+    const ref = firebase.storage().ref(`${DBPaths.BUS_COOP}`);
+
+    const metadata = {
+        contentType: fileUserPhoto.type
+    };
+
+    const task = ref.child(fileNameUserPhoto).put(fileUserPhoto, metadata);
+
+    // Monitor the upload progress
+    task.on('state_changed',
+        function (snapshot) {
+            // Handle progress
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload user photo is ' + progress + '% done');
+        },
+        function (error) {
+            // Handle errors
+            console.error('Error uploading file: ', error);
+        },
+        function () {
+            // Handle successful upload
+            task.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+
+                updateCoop(currentCoop.imgUrl, downloadURL);
+
+            });
+        }
+    );
+}
+
+function updateCoop(busCoopImageUrl, busCoopUserImageUrl) {
+    const busCoopData = {
+        fullName: fullnameInput.value,
+        email: emailInput.value,
+        password: passwordInput.value,
+        imgUrl: busCoopImageUrl,
+        userImgSrc: busCoopUserImageUrl,
+        phoneNum: phoneNumInput.value,
+        companyName: companyName.value,
+        companyAddress: companyAddress.value,
+        companyDescription: companyDescription.value,
+    };
+
+    const userRef = firebase.database().ref(`${DBPaths.BUS_COOP}/${currentCoop.key}`);
+    userRef.update(busCoopData)
+        .then(() => {
+            hideAddBusCoopModal();
+            getBusCoop();
+        })
+        .catch(error => {
+            console.error('Error updating multiple fields:', error);
+        });
+
+    hideLoader();
 }
 
 function createAccount(busCoopImageUrl, busCoopUserImageUrl) {
@@ -259,8 +402,8 @@ function createAccount(busCoopImageUrl, busCoopUserImageUrl) {
             // An error occurred while setting data
             console.error('Error setting data:', error);
         });
-            
-    
+
+
 
     hideLoader();
 }
@@ -270,7 +413,7 @@ function showLoader() {
 }
 
 function hideLoader() {
-    setTimeout(function() {
+    setTimeout(function () {
         loader.style.display = "none";
     }, 2000); // 3000 milliseconds = 3 seconds
 }
@@ -279,24 +422,44 @@ function deleteBusCoop() {
 
     const isConfirmed = window.confirm("Are you sure you want to remove this account?");
 
-    if(isConfirmed) {
+    if (isConfirmed) {
         const key = document.getElementById('coopId').textContent;
         const dbRef = firebase.database().ref(`${DBPaths.BUS_COOP}/${key}`);
-            
+
         dbRef.remove()
             .then(() => {
-                console.log('User data deleted successfully.');                
+                console.log('User data deleted successfully.');
                 signInWithEmailAndPassword
                 getBusCoop();
                 hideCoopModal();
-                
+
             })
             .catch((error) => {
                 console.error('Error deleting user data:', error);
             });
     }
-    
 
+
+}
+
+function editBusCoop() {
+    action = "edit";
+    hideCoopModal();
+    busCoopUserPhoto.src = currentCoop.userImgSrc; // Reset bus cooperative image
+    img.src = currentCoop.imgUrl;  // Reset user photo
+
+    // Clear text input fields
+    fullnameInput.value = currentCoop.fullName;
+    emailInput.value = currentCoop.email;
+    passwordInput.value = currentCoop.password;
+    confirmPasswordInput.value = currentCoop.password;
+    phoneNumInput.value = currentCoop.phoneNum;
+
+    // Clear company-related fields
+    companyName.value = currentCoop.companyName;
+    companyAddress.value = currentCoop.companyAddress;
+    companyDescription.value = currentCoop.companyDescription;
+    showAddBusCoopModal();
 }
 
 function handleSearchInput() {
@@ -372,13 +535,13 @@ function busCoopLoginDetailsIsValid() {
 
     // Validate Email
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
-    
+
     // Validate Password
     const passwordValid = passwordInput.value.trim().length >= 8;
-    
+
     // Validate Confirm Password
     const confirmPasswordValid = confirmPasswordInput.value.trim() === passwordInput.value.trim();
-    
+
     // Validate Phone Number
     const phoneNumValid = /^\d{11}$/.test(phoneNumInput.value.trim());
 

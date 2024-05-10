@@ -208,7 +208,7 @@ input[type="file"] {
 
 #deleteCoopBtn {
     height: fit-content;
-    width: fit-content;
+    width: 100px;
     outline: none;
     font-size: 17px;
     color: white;
@@ -218,5 +218,20 @@ input[type="file"] {
     border-radius: 25px;
     transition: all 0.3s ease;
     background: red;
+    cursor: pointer;
+}
+
+#editCoopBtn {
+    height: fit-content;
+    width: 100px;
+    outline: none;
+    font-size: 17px;
+    color: white;
+    padding: 10px 15px 10px 15px;
+    margin: 10px;
+    border: 1px solid lightgrey;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    background: rgb(8, 160, 34);
     cursor: pointer;
 }
