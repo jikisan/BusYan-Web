@@ -200,19 +200,14 @@ function saveBusCoopInDb(event) {
 
             switch (action) {
                 case "add":
-                    showLoader();
                     uploadBusCoopImage();
                     break;
                 case "edit":
                     validateImages();
                     break;
             }
-
         }
     }
-
-    hideLoader();
-
 }
 
 function validateImages() {
@@ -263,7 +258,7 @@ function uploadBusCoopImage() {
 
                 switch (action) {
                     case "add":
-                        updateCoop();
+                        uploadBusCoopUserImage(downloadURL);
                         break;
                     case "edit":
                         if (busCoopUserPhotoBtn && (busCoopUserPhotoBtn.files.length === 0 || busCoopUserPhotoBtn.value === '')) {
@@ -397,6 +392,7 @@ function createAccount(busCoopImageUrl, busCoopUserImageUrl) {
         .then(() => {
             hideAddBusCoopModal();
             getBusCoop();
+
         })
         .catch(error => {
             // An error occurred while setting data

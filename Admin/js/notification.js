@@ -12,13 +12,19 @@ function generateNotifs() {
 
     notifRef.orderByChild('role').equalTo('cooperative').once('value',
         (snapshot) => {
+
+            const notifsArray = [];
             snapshot.forEach((notif) => {
 
                 const key = notif.key;
                 const data = notif.val();
                 data["key"] = key;
+                notifsArray.push(data);
+            });
 
-                createNotifItem(data.fullName);
+            const reversedArray = notifsArray.reverse();
+            reversedArray.forEach((notif) => {
+                createNotifItem(notif.fullName);
             });
 
 
